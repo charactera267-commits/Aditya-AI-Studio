@@ -1,248 +1,241 @@
-from fastapi import FastAPI, UploadFile, File
+ from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import os
 
 app = FastAPI()
 
-# Folder Setup
-EXPORT_DIR = "exports"
-os.makedirs(EXPORT_DIR, exist_ok=True)
-app.mount("/exports", StaticFiles(directory=EXPORT_DIR), name="exports")
+# System Directories
+os.makedirs("exports", exist_ok=True)
+app.mount("/exports", StaticFiles(directory="exports"), name="exports")
 
 @app.get("/", response_class=HTMLResponse)
-def elite_dashboard():
+def ultimate_os():
     return f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ADITYA AI | Elite OS</title>
+        <title>ADITYA AI | QUANTUM INTERFACE</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Orbitron:wght@400;900&family=Sora:wght@300;600&display=swap" rel="stylesheet">
         <style>
             :root {{
-                --bg: #050505;
+                --black: #050505;
                 --neon-blue: #00F0FF;
-                --neon-purple: #7B2FFF;
+                --electric-purple: #7B2FFF;
                 --glass: rgba(255, 255, 255, 0.03);
-                --glass-border: rgba(255, 255, 255, 0.1);
-                --text: #F5F5F5;
+                --glass-border: rgba(255, 255, 255, 0.08);
+                --shadow: 0 0 30px rgba(0, 240, 255, 0.1);
             }}
 
-            * {{ margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }}
-            body {{ 
-                background: var(--bg); 
-                color: var(--text); 
-                font-family: 'Space Grotesk', sans-serif; 
-                overflow: hidden; 
+            * {{ margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }}
+            
+            body {{
+                background-color: var(--black);
+                color: #F5F5F5;
+                font-family: 'Sora', sans-serif;
                 height: 100vh;
+                overflow: hidden;
                 display: flex;
             }}
 
-            /* --- BACKGROUND EFFECTS --- */
-            .bg-glow {{
+            /* --- CINEMATIC BACKGROUND --- */
+            .quantum-bg {{
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%);
-                z-index: -1;
+                background: radial-gradient(circle at 20% 30%, #0d0d2b 0%, #050505 100%);
+                z-index: -2;
             }}
-            .particles {{
+            .grid-overlay {{
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background-image: radial-gradient(white 1px, transparent 1px);
-                background-size: 50px 50px; opacity: 0.05; z-index: -1;
+                background-image: linear-gradient(var(--glass-border) 1px, transparent 1px), 
+                                  linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+                background-size: 40px 40px; z-index: -1; opacity: 0.2;
             }}
 
-            /* --- SIDEBAR --- */
-            nav {{
-                width: 80px; height: 100vh; background: rgba(0,0,0,0.4);
-                backdrop-filter: blur(20px); border-right: 1px solid var(--glass-border);
-                display: flex; flex-direction: column; align-items: center; padding: 30px 0; gap: 30px;
-                transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100;
+            /* --- LEFT SIDEBAR (APPLE-TESLA STYLE) --- */
+            aside {{
+                width: 90px; height: 100vh; background: rgba(0,0,0,0.6);
+                backdrop-filter: blur(40px); border-right: 1px solid var(--glass-border);
+                display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 40px;
+                transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 100;
             }}
-            nav:hover {{ width: 240px; }}
-            .nav-item {{
-                width: 100%; display: flex; align-items: center; padding: 0 25px;
-                color: rgba(255,255,255,0.4); text-decoration: none; font-size: 18px; transition: 0.3s;
-                height: 50px; position: relative;
+            aside:hover {{ width: 260px; }}
+            .nav-icon {{
+                width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+                border-radius: 15px; transition: 0.3s; color: rgba(255,255,255,0.4);
+                text-decoration: none; position: relative; overflow: hidden;
             }}
-            .nav-item i {{ min-width: 30px; }}
-            .nav-item span {{ margin-left: 20px; opacity: 0; white-space: nowrap; font-size: 14px; letter-spacing: 1px; }}
-            nav:hover .nav-item span {{ opacity: 1; }}
-            .nav-item:hover {{ color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); }}
-            .nav-item.active {{ color: var(--neon-purple); border-right: 3px solid var(--neon-purple); }}
-
-            /* --- MAIN CONTENT --- */
-            main {{ flex: 1; height: 100vh; overflow-y: auto; padding: 40px; position: relative; scroll-behavior: smooth; }}
-            
-            /* --- TOP BAR --- */
-            .top-bar {{
-                display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;
+            .nav-icon span {{
+                display: none; position: absolute; left: 70px; white-space: nowrap;
+                font-family: 'Space Grotesk', sans-serif; letter-spacing: 2px; font-size: 12px;
             }}
-            .status {{ display: flex; align-items: center; gap: 10px; font-size: 12px; letter-spacing: 2px; color: var(--neon-blue); }}
-            .pulse {{ width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; box-shadow: 0 0 10px var(--neon-blue); animation: pulse 2s infinite; }}
-            @keyframes pulse {{ 0% {{ transform: scale(1); opacity: 1; }} 50% {{ transform: scale(1.5); opacity: 0.5; }} 100% {{ transform: scale(1); opacity: 1; }} }}
-            
-            .user-profile {{ 
-                width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--neon-purple);
-                background: url('https://www.facebook.com/profile.php?id=100082403413385') center/cover;
-                box-shadow: 0 0 15px rgba(123, 47, 255, 0.3);
+            aside:hover .nav-icon span {{ display: block; }}
+            .nav-icon:hover, .nav-icon.active {{
+                background: var(--glass); color: var(--neon-blue); box-shadow: var(--shadow);
             }}
 
-            /* --- HERO SECTION --- */
-            .hero {{ text-align: center; margin: 60px 0; }}
-            .orb-container {{ position: relative; width: 200px; height: 200px; margin: 0 auto 30px; }}
-            .orb {{
-                width: 100%; height: 100%; background: radial-gradient(circle, var(--neon-blue) 0%, var(--neon-purple) 100%);
-                border-radius: 50%; filter: blur(40px); opacity: 0.5; animation: rotate 10s linear infinite;
+            /* --- MAIN INTERFACE --- */
+            main {{ flex: 1; height: 100vh; overflow-y: scroll; padding: 40px; scrollbar-width: none; }}
+            main::-webkit-scrollbar {{ display: none; }}
+
+            /* --- TOP HEADER --- */
+            header {{
+                display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px;
             }}
-            .orb-core {{
+            .status-indicator {{
+                display: flex; align-items: center; gap: 12px; font-size: 10px;
+                letter-spacing: 3px; color: var(--neon-blue); font-family: 'Orbitron';
+            }}
+            .pulse-dot {{
+                width: 6px; height: 6px; background: var(--neon-blue); border-radius: 50%;
+                animation: pulse 2s infinite; box-shadow: 0 0 10px var(--neon-blue);
+            }}
+            @keyframes pulse {{ 0% {{ opacity: 1; }} 50% {{ opacity: 0.3; }} 100% {{ opacity: 1; }} }}
+
+            /* --- HERO CORE (THE ORB) --- */
+            .ai-core-container {{
+                text-align: center; position: relative; margin: 40px 0;
+            }}
+            .orb-glow {{
                 position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                width: 120px; height: 120px; background: rgba(0,0,0,0.8);
-                border: 1px solid var(--neon-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center;
-                box-shadow: inset 0 0 20px var(--neon-blue);
+                width: 300px; height: 300px; background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
+                filter: blur(80px); opacity: 0.2; animation: float 6s ease-in-out infinite;
+            }}
+            .orb-visual {{
+                width: 140px; height: 140px; border: 2px solid var(--neon-blue);
+                border-radius: 50%; margin: 0 auto; position: relative;
+                box-shadow: inset 0 0 20px var(--neon-blue), 0 0 40px rgba(0, 240, 255, 0.2);
+                display: flex; align-items: center; justify-content: center;
+                animation: rotate 20s linear infinite;
             }}
             @keyframes rotate {{ from {{ transform: rotate(0deg); }} to {{ transform: rotate(360deg); }} }}
+            @keyframes float {{ 0%, 100% {{ transform: translate(-50%, -55%); }} 50% {{ transform: translate(-50%, -45%); }} }}
 
-            h1 {{ font-family: 'Orbitron', sans-serif; font-size: 45px; letter-spacing: 8px; margin-bottom: 10px; }}
-            .motto {{ opacity: 0.5; letter-spacing: 4px; font-size: 14px; text-transform: uppercase; }}
+            .welcome-text h1 {{
+                font-family: 'Orbitron'; font-weight: 900; font-size: 56px; 
+                letter-spacing: 15px; margin-top: 20px; text-shadow: 0 0 20px rgba(255,255,255,0.1);
+            }}
+            .motto {{
+                font-family: 'Space Grotesk'; font-size: 12px; letter-spacing: 8px;
+                opacity: 0.4; text-transform: uppercase; margin-top: 10px;
+            }}
 
-            /* --- STUDIO PANEL --- */
+            /* --- STUDIO DASHBOARD (Billion Dollar Look) --- */
             .studio-grid {{
-                display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-top: 50px;
+                display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; margin-top: 80px;
             }}
             .glass-panel {{
-                background: var(--glass); backdrop-filter: blur(30px); border: 1px solid var(--glass-border);
-                border-radius: 30px; padding: 30px; position: relative; overflow: hidden;
+                background: var(--glass); backdrop-filter: blur(40px); border: 1px solid var(--glass-border);
+                border-radius: 35px; padding: 40px; transition: 0.4s;
             }}
-            .glass-panel::before {{
-                content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-                background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
-                transform: rotate(45deg); animation: shimmer 6s infinite;
-            }}
-            @keyframes shimmer {{ 0% {{ left: -100%; }} 100% {{ left: 100%; }} }}
+            .glass-panel:hover {{ border-color: rgba(0, 240, 255, 0.3); transform: translateY(-5px); }}
 
-            /* --- UPLOAD AREA --- */
             .upload-zone {{
-                border: 1px dashed var(--neon-blue); border-radius: 20px; padding: 60px 20px;
-                text-align: center; cursor: pointer; transition: 0.3s; margin-top: 20px;
+                border: 1px dashed rgba(255,255,255,0.1); border-radius: 25px; padding: 60px 20px;
+                text-align: center; cursor: pointer; transition: 0.3s;
             }}
-            .upload-zone:hover {{ background: rgba(0, 240, 255, 0.05); box-shadow: 0 0 30px rgba(0, 240, 255, 0.1); }}
-            
-            .btn-action {{
-                background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
-                border: none; padding: 15px 40px; border-radius: 100px; color: white;
-                font-weight: bold; cursor: pointer; margin-top: 20px; font-family: 'Orbitron', sans-serif;
-                letter-spacing: 2px; transition: 0.3s;
+            .upload-zone:hover {{ background: rgba(255,255,255,0.02); border-color: var(--neon-blue); }}
+
+            .neon-button {{
+                width: 100%; background: white; color: black; border: none; padding: 20px;
+                border-radius: 100px; font-family: 'Orbitron'; font-weight: 900; font-size: 14px;
+                letter-spacing: 3px; cursor: pointer; margin-top: 30px; transition: 0.4s;
             }}
-            .btn-action:hover {{ transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 240, 255, 0.4); }}
+            .neon-button:hover {{ background: var(--neon-blue); transform: scale(1.02); box-shadow: 0 10px 40px rgba(0, 240, 255, 0.3); }}
 
-            /* --- STATS --- */
-            .stat-row {{ display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 12px; }}
-            .progress-bg {{ height: 4px; background: #222; border-radius: 10px; overflow: hidden; }}
-            .progress-bar {{ height: 100%; width: 75%; background: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); }}
+            /* --- ANALYTICS BARS --- */
+            .analytics-bar {{
+                height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; margin: 20px 0;
+                position: relative; overflow: hidden;
+            }}
+            .bar-fill {{
+                position: absolute; height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--electric-purple));
+                box-shadow: 0 0 15px var(--neon-blue);
+            }}
 
-            /* --- SOCIALS --- */
+            /* --- SOCIAL DOCK --- */
             .social-dock {{
-                position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px;
+                position: fixed; bottom: 40px; right: 40px; display: flex; gap: 20px;
             }}
-            .social-btn {{
-                width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border);
-                border-radius: 15px; display: flex; align-items: center; justify-content: center;
-                color: white; font-size: 20px; transition: 0.3s; backdrop-filter: blur(10px);
+            .social-link {{
+                width: 55px; height: 55px; background: var(--glass); border: 1px solid var(--glass-border);
+                border-radius: 18px; display: flex; align-items: center; justify-content: center;
+                color: white; font-size: 22px; transition: 0.4s; backdrop-filter: blur(20px);
             }}
-            .social-btn:hover {{ border-color: var(--neon-purple); color: var(--neon-purple); transform: scale(1.1); }}
+            .social-link:hover {{ border-color: var(--electric-purple); transform: translateY(-10px); color: var(--electric-purple); }}
 
-            /* --- MOBILE ADAPTATION --- */
-            @media (max-width: 768px) {{
-                nav {{ width: 0; position: fixed; left: -80px; }}
-                main {{ padding: 20px; }}
-                h1 {{ font-size: 28px; }}
-                .studio-grid {{ grid-template-columns: 1fr; }}
-            }}
         </style>
     </head>
     <body>
-        <div class="bg-glow"></div>
-        <div class="particles"></div>
+        <div class="quantum-bg"></div>
+        <div class="grid-overlay"></div>
 
-        <nav>
-            <div class="nav-item" style="margin-bottom: 40px; color: var(--neon-blue);"><i class="fas fa-atom"></i><span>ADITYA CORE</span></div>
-            <a href="#" class="nav-item active"><i class="fas fa-th-large"></i><span>DASHBOARD</span></a>
-            <a href="#" class="nav-item"><i class="fas fa-film"></i><span>AI STUDIO</span></a>
-            <a href="#" class="nav-item"><i class="fas fa-wand-magic-sparkles"></i><span>IMAGE GENERATOR</span></a>
-            <a href="#" class="nav-item"><i class="fas fa-microphone-lines"></i><span>VOICE AI</span></a>
-            <a href="#" class="nav-item" style="margin-top: auto;"><i class="fas fa-cog"></i><span>SETTINGS</span></a>
-        </nav>
+        <aside>
+            <a href="#" class="nav-icon active"><i class="fas fa-layer-group"></i><span>DASHBOARD</span></a>
+            <a href="#" class="nav-icon"><i class="fas fa-wand-magic-sparkles"></i><span>AI STUDIO</span></a>
+            <a href="#" class="nav-icon"><i class="fas fa-video"></i><span>VIDEO EDITOR</span></a>
+            <a href="#" class="nav-icon"><i class="fas fa-brain"></i><span>NEURAL VOICE</span></a>
+            <a href="#" class="nav-icon" style="margin-top: auto;"><i class="fas fa-sliders"></i><span>SETTINGS</span></a>
+        </aside>
 
         <main>
-            <div class="top-bar">
-                <div class="status"><div class="pulse"></div> SYSTEM ONLINE: 2030 PROTOCOL</div>
-                <div style="display:flex; gap: 20px; align-items:center;">
-                    <i class="fas fa-search" style="opacity:0.4;"></i>
-                    <div class="user-profile"></div>
+            <header>
+                <div class="status-indicator">
+                    <div class="pulse-dot"></div> SYSTEM ENCRYPTED // ADITYA TRIPATHI OS 2030
                 </div>
-            </div>
+                <div style="display:flex; gap: 30px; align-items:center;">
+                    <i class="fas fa-search" style="opacity:0.3; font-size: 18px;"></i>
+                    <div style="width: 45px; height: 45px; border-radius: 14px; border: 1px solid var(--neon-blue); background: rgba(0,240,255,0.1);"></div>
+                </div>
+            </header>
 
-            <div class="hero">
-                <div class="orb-container">
-                    <div class="orb"></div>
-                    <div class="orb-core"><i class="fas fa-brain" style="font-size: 40px; color: var(--neon-blue);"></i></div>
+            <div class="ai-core-container">
+                <div class="orb-glow"></div>
+                <div class="orb-visual">
+                    <i class="fas fa-atom" style="font-size: 40px; color: var(--neon-blue); transform: rotate(-20deg);"></i>
                 </div>
-                <h1>ADITYA TRIPATHI</h1>
-                <div class="motto">Create. Automate. Dominate.</div>
-                <p style="opacity: 0.4; font-size: 12px; margin-top: 10px;">First AI Operating System from Chhattisgarh, India</p>
+                <div class="welcome-text">
+                    <h1>ADITYA</h1>
+                    <div class="motto">CREATE. AUTOMATE. DOMINATE.</div>
+                    <p style="margin-top: 15px; opacity: 0.4; font-size: 11px; letter-spacing: 2px;">BY ADITYA TRIPATHI // CHHATTISGARH'S FIRST AI ENGINE</p>
+                </div>
             </div>
 
             <div class="studio-grid">
                 <div class="glass-panel">
-                    <h3 style="letter-spacing: 2px;"><i class="fas fa-bolt" style="color: var(--neon-blue);"></i> NEURAL VIDEO ENGINE</h3>
-                    <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                        <i class="fas fa-cloud-arrow-up" style="font-size: 40px; opacity: 0.3; margin-bottom: 15px;"></i>
-                        <p style="opacity: 0.6;">Initialize Neural Bypass: Drag & Drop Anime Clips</p>
-                        <input type="file" id="fileInput" hidden onchange="startProcessing()">
+                    <h3 style="font-family: 'Orbitron'; font-size: 14px; letter-spacing: 3px; margin-bottom: 30px;">NEURAL BYPASS ENGINE</h3>
+                    <div class="upload-zone" onclick="document.getElementById('f').click()">
+                        <i class="fas fa-dna" style="font-size: 40px; opacity: 0.2; margin-bottom: 20px; color: var(--neon-blue);"></i>
+                        <p style="font-size: 12px; opacity: 0.5; letter-spacing: 1px;">DRAG ANIME CLIPS TO INITIALIZE QUANTUM PROCESSING</p>
+                        <form action="/process" method="post" enctype="multipart/form-data">
+                            <input type="file" id="f" name="file" hidden onchange="form.submit()">
+                        </form>
                     </div>
-                    <div id="processArea" style="display:none; margin-top: 30px;">
-                        <div class="stat-row"><span>BYPASSING COPYRIGHT...</span><span>88%</span></div>
-                        <div class="progress-bg"><div class="progress-bar" style="width: 88%;"></div></div>
-                        <button class="btn-action" style="width: 100%;">EXPORT VIRAL CLIP</button>
-                    </div>
+                    <button class="neon-button">EXECUTE BYPASS</button>
                 </div>
 
                 <div class="glass-panel">
-                    <h3 style="letter-spacing: 2px; font-size: 14px;">SYSTEM ANALYTICS</h3>
-                    <div style="margin-top: 30px;">
-                        <div class="stat-row"><span>NEURAL LOAD</span><span>42%</span></div>
-                        <div class="progress-bg" style="margin-bottom: 20px;"><div class="progress-bar" style="width: 42%; background: var(--neon-purple);"></div></div>
-                        
-                        <div class="stat-row"><span>GPU SIMULATION</span><span>91%</span></div>
-                        <div class="progress-bg" style="margin-bottom: 20px;"><div class="progress-bar" style="width: 91%;"></div></div>
+                    <h3 style="font-family: 'Orbitron'; font-size: 14px; letter-spacing: 3px; margin-bottom: 30px;">SYSTEM ANALYTICS</h3>
+                    
+                    <p style="font-size: 10px; opacity: 0.4;">NEURAL LOAD</p>
+                    <div class="analytics-bar"><div class="bar-fill" style="width: 42%;"></div></div>
 
-                        <div class="stat-row"><span>VIRAL PREDICTION</span><span>🔥 HIGH</span></div>
-                        <div style="height: 60px; background: rgba(255,255,255,0.02); border-radius: 15px; display:flex; align-items:center; justify-content:center; border: 1px solid rgba(123, 47, 255, 0.2);">
-                             <i class="fas fa-chart-line" style="color: var(--neon-purple); margin-right: 10px;"></i> 98.4% Retainment
-                        </div>
-                    </div>
+                    <p style="font-size: 10px; opacity: 0.4; margin-top: 25px;">GPU RENDERING POWER</p>
+                    <div class="analytics-bar"><div class="bar-fill" style="width: 89%;"></div></div>
+
+                    <p style="font-size: 10px; opacity: 0.4; margin-top: 25px;">VIRAL PROPENSITY INDEX</p>
+                    <div style="margin-top: 15px; font-family: 'Orbitron'; color: var(--neon-blue); font-size: 24px;">98.2% <span style="font-size: 10px; opacity:0.5;">CRITICAL MATCH</span></div>
                 </div>
             </div>
         </main>
 
         <div class="social-dock">
-            <a href="https://www.instagram.com/goku80242?igsh=MWNudjhmNjh5dzEyNw==" target="_blank" class="social-btn"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.facebook.com/profile.php?id=100082403413385" target="_blank" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/goku80242" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.facebook.com/profile.php?id=100082403413385" target="_blank" class="social-link"><i class="fab fa-facebook-f"></i></a>
         </div>
-
-        <script>
-            function startProcessing() {{
-                document.getElementById('dropZone').style.display = 'none';
-                document.getElementById('processArea').style.display = 'block';
-            }}
-        </script>
     </body>
     </html>
     """
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-    
+           
