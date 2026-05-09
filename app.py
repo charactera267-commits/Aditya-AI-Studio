@@ -1,17 +1,17 @@
- from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import os
 
 app = FastAPI()
 
-# System Directories
+# System Directories setup
 os.makedirs("exports", exist_ok=True)
 app.mount("/exports", StaticFiles(directory="exports"), name="exports")
 
 @app.get("/", response_class=HTMLResponse)
 def ultimate_os():
-    return f"""
+    html_content = """
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -21,221 +21,197 @@ def ultimate_os():
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Orbitron:wght@400;900&family=Sora:wght@300;600&display=swap" rel="stylesheet">
         <style>
-            :root {{
+            :root {
                 --black: #050505;
                 --neon-blue: #00F0FF;
                 --electric-purple: #7B2FFF;
                 --glass: rgba(255, 255, 255, 0.03);
                 --glass-border: rgba(255, 255, 255, 0.08);
-                --shadow: 0 0 30px rgba(0, 240, 255, 0.1);
-            }}
+            }
 
-            * {{ margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }}
+            * { margin: 0; padding: 0; box-sizing: border-box; }
             
-            body {{
-                background-color: var(--black);
-                color: #F5F5F5;
-                font-family: 'Sora', sans-serif;
-                height: 100vh;
-                overflow: hidden;
-                display: flex;
-            }}
+            body {
+                background-color: var(--black); color: #F5F5F5;
+                font-family: 'Sora', sans-serif; height: 100vh;
+                overflow: hidden; display: flex;
+            }
 
-            /* --- CINEMATIC BACKGROUND --- */
-            .quantum-bg {{
+            /* --- BACKGROUND --- */
+            .bg-glow {
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: radial-gradient(circle at 20% 30%, #0d0d2b 0%, #050505 100%);
+                background: radial-gradient(circle at 50% 30%, #0d0d2b 0%, #050505 100%);
                 z-index: -2;
-            }}
-            .grid-overlay {{
+            }
+            .grid {
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background-image: linear-gradient(var(--glass-border) 1px, transparent 1px), 
                                   linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
-                background-size: 40px 40px; z-index: -1; opacity: 0.2;
-            }}
+                background-size: 40px 40px; z-index: -1; opacity: 0.3;
+            }
 
-            /* --- LEFT SIDEBAR (APPLE-TESLA STYLE) --- */
-            aside {{
+            /* --- SIDEBAR --- */
+            aside {
                 width: 90px; height: 100vh; background: rgba(0,0,0,0.6);
                 backdrop-filter: blur(40px); border-right: 1px solid var(--glass-border);
                 display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 40px;
-                transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 100;
-            }}
-            aside:hover {{ width: 260px; }}
-            .nav-icon {{
+                transition: 0.4s; z-index: 100;
+            }
+            aside:hover { width: 240px; }
+            .nav-icon {
                 width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
-                border-radius: 15px; transition: 0.3s; color: rgba(255,255,255,0.4);
-                text-decoration: none; position: relative; overflow: hidden;
-            }}
-            .nav-icon span {{
+                border-radius: 15px; color: rgba(255,255,255,0.4); text-decoration: none;
+                position: relative; transition: 0.3s;
+            }
+            .nav-icon span {
                 display: none; position: absolute; left: 70px; white-space: nowrap;
-                font-family: 'Space Grotesk', sans-serif; letter-spacing: 2px; font-size: 12px;
-            }}
-            aside:hover .nav-icon span {{ display: block; }}
-            .nav-icon:hover, .nav-icon.active {{
-                background: var(--glass); color: var(--neon-blue); box-shadow: var(--shadow);
-            }}
+                font-family: 'Space Grotesk'; letter-spacing: 2px; font-size: 12px;
+            }
+            aside:hover .nav-icon span { display: block; }
+            .nav-icon:hover, .nav-icon.active {
+                background: var(--glass); color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+            }
 
-            /* --- MAIN INTERFACE --- */
-            main {{ flex: 1; height: 100vh; overflow-y: scroll; padding: 40px; scrollbar-width: none; }}
-            main::-webkit-scrollbar {{ display: none; }}
+            /* --- MAIN --- */
+            main { flex: 1; padding: 40px; overflow-y: auto; scrollbar-width: none; }
+            
+            header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; }
+            .status { display: flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: 3px; color: var(--neon-blue); font-family: 'Orbitron'; }
+            .pulse { width: 8px; height: 8px; background: var(--neon-blue); border-radius: 50%; animation: pulse 2s infinite; box-shadow: 0 0 10px var(--neon-blue); }
+            @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.5); } }
 
-            /* --- TOP HEADER --- */
-            header {{
-                display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px;
-            }}
-            .status-indicator {{
-                display: flex; align-items: center; gap: 12px; font-size: 10px;
-                letter-spacing: 3px; color: var(--neon-blue); font-family: 'Orbitron';
-            }}
-            .pulse-dot {{
-                width: 6px; height: 6px; background: var(--neon-blue); border-radius: 50%;
-                animation: pulse 2s infinite; box-shadow: 0 0 10px var(--neon-blue);
-            }}
-            @keyframes pulse {{ 0% {{ opacity: 1; }} 50% {{ opacity: 0.3; }} 100% {{ opacity: 1; }} }}
-
-            /* --- HERO CORE (THE ORB) --- */
-            .ai-core-container {{
-                text-align: center; position: relative; margin: 40px 0;
-            }}
-            .orb-glow {{
+            /* --- ORB --- */
+            .core-box { text-align: center; position: relative; margin: 30px 0; }
+            .orb-glow {
                 position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                width: 300px; height: 300px; background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
-                filter: blur(80px); opacity: 0.2; animation: float 6s ease-in-out infinite;
-            }}
-            .orb-visual {{
-                width: 140px; height: 140px; border: 2px solid var(--neon-blue);
-                border-radius: 50%; margin: 0 auto; position: relative;
-                box-shadow: inset 0 0 20px var(--neon-blue), 0 0 40px rgba(0, 240, 255, 0.2);
-                display: flex; align-items: center; justify-content: center;
-                animation: rotate 20s linear infinite;
-            }}
-            @keyframes rotate {{ from {{ transform: rotate(0deg); }} to {{ transform: rotate(360deg); }} }}
-            @keyframes float {{ 0%, 100% {{ transform: translate(-50%, -55%); }} 50% {{ transform: translate(-50%, -45%); }} }}
+                width: 250px; height: 250px; background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%);
+                filter: blur(60px); opacity: 0.3; animation: breathe 5s infinite;
+            }
+            .orb {
+                width: 120px; height: 120px; border: 2px solid var(--neon-blue); border-radius: 50%;
+                margin: 0 auto; display: flex; align-items: center; justify-content: center;
+                box-shadow: inset 0 0 30px rgba(0, 240, 255, 0.3); animation: spin 15s linear infinite; position: relative;
+            }
+            @keyframes breathe { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.1); } }
+            @keyframes spin { 100% { transform: rotate(360deg); } }
+            
+            h1 { font-family: 'Orbitron'; font-size: 45px; letter-spacing: 12px; margin-top: 20px; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+            .subtitle { font-family: 'Space Grotesk'; font-size: 11px; letter-spacing: 6px; opacity: 0.5; margin-top: 10px; }
 
-            .welcome-text h1 {{
-                font-family: 'Orbitron'; font-weight: 900; font-size: 56px; 
-                letter-spacing: 15px; margin-top: 20px; text-shadow: 0 0 20px rgba(255,255,255,0.1);
-            }}
-            .motto {{
-                font-family: 'Space Grotesk'; font-size: 12px; letter-spacing: 8px;
-                opacity: 0.4; text-transform: uppercase; margin-top: 10px;
-            }}
+            /* --- PANELS --- */
+            .grid-system { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 60px; }
+            .glass-card { background: var(--glass); backdrop-filter: blur(30px); border: 1px solid var(--glass-border); border-radius: 30px; padding: 40px; }
+            
+            .upload-zone { border: 1px dashed rgba(255,255,255,0.2); padding: 50px 20px; text-align: center; border-radius: 20px; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+            .upload-zone:hover { background: rgba(0,240,255,0.05); border-color: var(--neon-blue); }
+            
+            /* --- PROGRESS & DOWNLOAD --- */
+            #statusArea { display: none; margin-top: 30px; }
+            .prog-bg { height: 4px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin: 15px 0; }
+            .prog-fill { height: 100%; width: 0%; background: var(--neon-blue); transition: 0.5s; box-shadow: 0 0 10px var(--neon-blue); }
+            
+            .btn-download { display: none; width: 100%; background: white; color: black; padding: 15px; border-radius: 100px; text-align: center; text-decoration: none; font-family: 'Orbitron'; font-weight: bold; letter-spacing: 2px; margin-top: 20px; transition: 0.3s; }
+            .btn-download:hover { background: var(--neon-blue); box-shadow: 0 0 20px var(--neon-blue); transform: scale(1.02); }
 
-            /* --- STUDIO DASHBOARD (Billion Dollar Look) --- */
-            .studio-grid {{
-                display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; margin-top: 80px;
-            }}
-            .glass-panel {{
-                background: var(--glass); backdrop-filter: blur(40px); border: 1px solid var(--glass-border);
-                border-radius: 35px; padding: 40px; transition: 0.4s;
-            }}
-            .glass-panel:hover {{ border-color: rgba(0, 240, 255, 0.3); transform: translateY(-5px); }}
-
-            .upload-zone {{
-                border: 1px dashed rgba(255,255,255,0.1); border-radius: 25px; padding: 60px 20px;
-                text-align: center; cursor: pointer; transition: 0.3s;
-            }}
-            .upload-zone:hover {{ background: rgba(255,255,255,0.02); border-color: var(--neon-blue); }}
-
-            .neon-button {{
-                width: 100%; background: white; color: black; border: none; padding: 20px;
-                border-radius: 100px; font-family: 'Orbitron'; font-weight: 900; font-size: 14px;
-                letter-spacing: 3px; cursor: pointer; margin-top: 30px; transition: 0.4s;
-            }}
-            .neon-button:hover {{ background: var(--neon-blue); transform: scale(1.02); box-shadow: 0 10px 40px rgba(0, 240, 255, 0.3); }}
-
-            /* --- ANALYTICS BARS --- */
-            .analytics-bar {{
-                height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; margin: 20px 0;
-                position: relative; overflow: hidden;
-            }}
-            .bar-fill {{
-                position: absolute; height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--electric-purple));
-                box-shadow: 0 0 15px var(--neon-blue);
-            }}
-
-            /* --- SOCIAL DOCK --- */
-            .social-dock {{
-                position: fixed; bottom: 40px; right: 40px; display: flex; gap: 20px;
-            }}
-            .social-link {{
-                width: 55px; height: 55px; background: var(--glass); border: 1px solid var(--glass-border);
-                border-radius: 18px; display: flex; align-items: center; justify-content: center;
-                color: white; font-size: 22px; transition: 0.4s; backdrop-filter: blur(20px);
-            }}
-            .social-link:hover {{ border-color: var(--electric-purple); transform: translateY(-10px); color: var(--electric-purple); }}
-
+            .social-dock { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; }
+            .s-icon { width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; text-decoration: none; transition: 0.3s; backdrop-filter: blur(10px); }
+            .s-icon:hover { color: var(--electric-purple); border-color: var(--electric-purple); transform: translateY(-5px); }
         </style>
     </head>
     <body>
-        <div class="quantum-bg"></div>
-        <div class="grid-overlay"></div>
+        <div class="bg-glow"></div>
+        <div class="grid"></div>
 
         <aside>
             <a href="#" class="nav-icon active"><i class="fas fa-layer-group"></i><span>DASHBOARD</span></a>
             <a href="#" class="nav-icon"><i class="fas fa-wand-magic-sparkles"></i><span>AI STUDIO</span></a>
-            <a href="#" class="nav-icon"><i class="fas fa-video"></i><span>VIDEO EDITOR</span></a>
-            <a href="#" class="nav-icon"><i class="fas fa-brain"></i><span>NEURAL VOICE</span></a>
-            <a href="#" class="nav-icon" style="margin-top: auto;"><i class="fas fa-sliders"></i><span>SETTINGS</span></a>
+            <a href="#" class="nav-icon"><i class="fas fa-chart-line"></i><span>ANALYTICS</span></a>
+            <a href="#" class="nav-icon" style="margin-top: auto;"><i class="fas fa-cog"></i><span>SETTINGS</span></a>
         </aside>
 
         <main>
             <header>
-                <div class="status-indicator">
-                    <div class="pulse-dot"></div> SYSTEM ENCRYPTED // ADITYA TRIPATHI OS 2030
-                </div>
-                <div style="display:flex; gap: 30px; align-items:center;">
-                    <i class="fas fa-search" style="opacity:0.3; font-size: 18px;"></i>
-                    <div style="width: 45px; height: 45px; border-radius: 14px; border: 1px solid var(--neon-blue); background: rgba(0,240,255,0.1);"></div>
-                </div>
+                <div class="status"><div class="pulse"></div> ADITYA OS // SYSTEM ONLINE</div>
             </header>
 
-            <div class="ai-core-container">
+            <div class="core-box">
                 <div class="orb-glow"></div>
-                <div class="orb-visual">
-                    <i class="fas fa-atom" style="font-size: 40px; color: var(--neon-blue); transform: rotate(-20deg);"></i>
-                </div>
-                <div class="welcome-text">
-                    <h1>ADITYA</h1>
-                    <div class="motto">CREATE. AUTOMATE. DOMINATE.</div>
-                    <p style="margin-top: 15px; opacity: 0.4; font-size: 11px; letter-spacing: 2px;">BY ADITYA TRIPATHI // CHHATTISGARH'S FIRST AI ENGINE</p>
-                </div>
+                <div class="orb"><i class="fas fa-atom" style="font-size: 40px; color: var(--neon-blue);"></i></div>
+                <h1>ADITYA TRIPATHI</h1>
+                <div class="subtitle">CG'S FIRST ANIME AI ENGINE</div>
             </div>
 
-            <div class="studio-grid">
-                <div class="glass-panel">
-                    <h3 style="font-family: 'Orbitron'; font-size: 14px; letter-spacing: 3px; margin-bottom: 30px;">NEURAL BYPASS ENGINE</h3>
-                    <div class="upload-zone" onclick="document.getElementById('f').click()">
-                        <i class="fas fa-dna" style="font-size: 40px; opacity: 0.2; margin-bottom: 20px; color: var(--neon-blue);"></i>
-                        <p style="font-size: 12px; opacity: 0.5; letter-spacing: 1px;">DRAG ANIME CLIPS TO INITIALIZE QUANTUM PROCESSING</p>
-                        <form action="/process" method="post" enctype="multipart/form-data">
-                            <input type="file" id="f" name="file" hidden onchange="form.submit()">
+            <div class="grid-system">
+                <div class="glass-card">
+                    <h3 style="font-family: 'Orbitron'; font-size: 14px; letter-spacing: 2px;">NEURAL VIDEO PROCESSOR</h3>
+                    
+                    <div id="dropZone" class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 40px; color: var(--neon-blue); margin-bottom: 15px;"></i>
+                        <p style="font-size: 12px; opacity: 0.5;">CLICK TO UPLOAD ANIME CLIP</p>
+                        <form id="uploadForm" action="/process" method="post" enctype="multipart/form-data">
+                            <input type="file" id="fileInput" name="file" hidden onchange="startProcessing()">
                         </form>
                     </div>
-                    <button class="neon-button">EXECUTE BYPASS</button>
+
+                    <div id="statusArea">
+                        <div id="statusText" style="font-size: 11px; letter-spacing: 2px; color: var(--neon-blue);">INITIALIZING...</div>
+                        <div class="prog-bg"><div id="progFill" class="prog-fill"></div></div>
+                        <a id="downloadBtn" href="#" class="btn-download"><i class="fas fa-download"></i> SAVE PRO CLIP</a>
+                    </div>
                 </div>
 
-                <div class="glass-panel">
-                    <h3 style="font-family: 'Orbitron'; font-size: 14px; letter-spacing: 3px; margin-bottom: 30px;">SYSTEM ANALYTICS</h3>
+                <div class="glass-card">
+                    <h3 style="font-family: 'Orbitron'; font-size: 14px; letter-spacing: 2px;">SYSTEM LOAD</h3>
+                    <p style="font-size: 10px; opacity: 0.5; margin-top: 30px;">CPU SIMULATION</p>
+                    <div class="prog-bg"><div class="prog-fill" style="width: 34%; background: var(--electric-purple);"></div></div>
                     
-                    <p style="font-size: 10px; opacity: 0.4;">NEURAL LOAD</p>
-                    <div class="analytics-bar"><div class="bar-fill" style="width: 42%;"></div></div>
-
-                    <p style="font-size: 10px; opacity: 0.4; margin-top: 25px;">GPU RENDERING POWER</p>
-                    <div class="analytics-bar"><div class="bar-fill" style="width: 89%;"></div></div>
-
-                    <p style="font-size: 10px; opacity: 0.4; margin-top: 25px;">VIRAL PROPENSITY INDEX</p>
-                    <div style="margin-top: 15px; font-family: 'Orbitron'; color: var(--neon-blue); font-size: 24px;">98.2% <span style="font-size: 10px; opacity:0.5;">CRITICAL MATCH</span></div>
+                    <p style="font-size: 10px; opacity: 0.5; margin-top: 20px;">AI BYPASS ENGINE</p>
+                    <div class="prog-bg"><div class="prog-fill" style="width: 88%;"></div></div>
                 </div>
             </div>
         </main>
 
         <div class="social-dock">
-            <a href="https://www.instagram.com/goku80242" target="_blank" class="social-link"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.facebook.com/profile.php?id=100082403413385" target="_blank" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/goku80242" class="s-icon" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.facebook.com/profile.php?id=100082403413385" class="s-icon" target="_blank"><i class="fab fa-facebook-f"></i></a>
         </div>
+
+        <script>
+            function startProcessing() {
+                document.getElementById('dropZone').style.display = 'none';
+                document.getElementById('statusArea').style.display = 'block';
+                
+                let fill = document.getElementById('progFill');
+                let txt = document.getElementById('statusText');
+
+                fill.style.width = "30%";
+                txt.innerText = "UPLOADING TO CLOUD...";
+
+                setTimeout(() => {
+                    fill.style.width = "75%";
+                    txt.innerText = "BYPASSING COPYRIGHT ALGORITHMS...";
+                    
+                    setTimeout(() => {
+                        fill.style.width = "100%";
+                        txt.innerText = "PROCESSING COMPLETE!";
+                        txt.style.color = "#00FF00";
+                        
+                        // Fake Download trigger for demo (Needs proper backend integration for real file)
+                        document.getElementById('downloadBtn').style.display = "block";
+                    }, 3000);
+                }, 2000);
+            }
+        </script>
     </body>
     </html>
     """
-           
+    return HTMLResponse(content=html_content)
+
+@app.post("/process")
+async def process(file: UploadFile = File(...)):
+    # This saves the uploaded file for real
+    file_location = f"exports/{file.filename}"
+    with open(file_location, "wb+") as file_object:
+        file_object.write(await file.read())
+    return {"info": f"file '{file.filename}' saved at '{file_location}'"}
+ 
